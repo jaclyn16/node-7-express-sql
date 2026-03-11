@@ -68,12 +68,33 @@ async function getNewestAnimal() {
 // 6. 🌟 BONUS CHALLENGE — getAnimalsByCategory(category)
 
 // 7. deleteOneAnimal(id)
+async function deleteOneAnimal(id) {
+    await db.query(
+        "DELETE FROM animals WHERE id = $1", [id]
+    );
+}
 
 // 8. addOneAnimal(name, category, can_fly, lives_in)
+async function addOneAnimal(name, category, can_fly, lives_in) {
+  await db.query(
+    "INSERT INTO animals (name, category, can_fly, lives_in) VALUES ($1, $2, $3, $4)",
+    [name, category, can_fly, lives_in],
+  );
+}
 
 // 9. updateOneAnimalName(id, newName)
+async function updateOneAnimalName(id, newName) {
+    await db.query(
+        "UPDATE animals SET name = $1 WHERE id = $2", [newName, id]
+    );
+}
 
 // 10. updateOneAnimalCategory(id, newCategory)
+async function updateOneAnimalCategory(id, newCategory) {
+    await db.query(
+        "UPDATE animals SET category = $1 WHERE id = $2", [newCategory, id]
+    );
+}
 
 // 11. 🌟 BONUS CHALLENGE — addManyAnimals(animals)
 
@@ -85,10 +106,10 @@ async function getNewestAnimal() {
 // 1. GET /get-all-animals
 app.get("/get-all-animals", async (req, res) => {
     const animals = await getAllAnimals();
-    res.json(animals);
+    res.json(animals); 
 });
 
-// 2. GET /get-one-animal-by-name/:name
+// 2. GET /get-one-animal-by-name/:name........
 app.get("/get-one-animal-by-name/:name", async (req, res) => {
     const name = req.params.name;
     const animal = await getOneAnimalByName(name);
@@ -113,11 +134,31 @@ app.get("/get-newest-animal", async (req, res) => {
 // 6. 🌟 BONUS CHALLENGE — GET /get-animals-by-category/:category
 
 // 7. POST /delete-one-animal/:id
+app.post("/delete-one-animal/:id", async (req, res) => {
+    const id = req.params.id;
+    await deleteOneAnimal(id);
+    res.send(`Success! Animal ${id} was deleted!`);
+})
 
 // 8. POST /add-one-animal
+app.post("/add-one-animal", async (req, res) => {
+  const { name, category, can_fly, lives_in } = req.body;
+  await addOneAnimal(name, category, can_fly, lives_in);
+    res.send(`Success! ${req.body.name} was added! yay!`);
+})
 
 // 9. POST /update-one-animal-name
+app.post("/update-one-animal-name", async (req, res) => {
+  const { id, newName } = req.body;
+  await updateOneAnimalName(id, newName);
+  res.send("Success, the animal's name was changed!");
+})
 
 // 10. POST /update-one-animal-category
+app.post("/update-one-animal-category", async (req, res) => {
+    const { id, newCategory } = req.body;
+    await updateOneAnimalCategory(id, newCategory);
+    res.send("Success! The animal's category was updated!");
+})
 
 // 11. 🌟 BONUS CHALLENGE — POST /add-many-animals
